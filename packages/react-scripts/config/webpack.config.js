@@ -43,6 +43,10 @@ const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
+const REACT_APP_NAME = process.env.REACT_APP_NAME;
+const imageInlineSizeLimit = parseInt(
+  process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
+);
 
 // Check if TypeScript is setup
 const useTypeScript = fs.existsSync(paths.appTsConfig);
@@ -343,7 +347,7 @@ module.exports = function(webpackEnv) {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               loader: require.resolve('url-loader'),
               options: {
-                limit: 10000,
+                limit: imageInlineSizeLimit,
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
@@ -389,6 +393,23 @@ module.exports = function(webpackEnv) {
                       },
                     },
                   ],
+                  [
+                    'babel-plugin-replace-imports',
+                    {
+                      test: /^spinach-app$/i,
+                      replacer: './apps/' + REACT_APP_NAME,
+                    },
+                  ],
+                  //[
+                  //  'transform-modules',
+                  //  {
+                  //    'element-react': {
+                  //      transform: 'element-react/dist/npm/es5/src/${member}',
+                  //      preventFullImport: true,
+                  //      kebabCase: true,
+                  //    },
+                  //  },
+                  //],
                 ],
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
