@@ -75,13 +75,26 @@ const resolveModule = (resolveFn, filePath) => {
 
 const envAppBuild = process.env.REACT_APP_BUILD_PATH || 'build';
 
+const getAppHtml = appName => {
+  const defaultHtml = resolveApp('public/index.html');
+  if (appName) {
+    const html = resolveApp('public/' + appName + '.index.html');
+    if (fs.existsSync(html)) {
+      console.log('index.html: ', html);
+      return html;
+    }
+  }
+  return defaultHtml;
+};
+const appHtml = getAppHtml(process.env.REACT_APP_NAME);
+
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
   appBuild: resolveApp(envAppBuild),
   appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
+  appHtml: appHtml,
   appIndexJs: resolveModule(resolveApp, 'src/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
@@ -104,7 +117,7 @@ module.exports = {
   appPath: resolveApp('.'),
   appBuild: resolveApp(envAppBuild),
   appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
+  appHtml: appHtml,
   appIndexJs: resolveModule(resolveApp, 'src/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
